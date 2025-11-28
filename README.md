@@ -147,3 +147,4 @@
         for URL https://download.pytorch.org/whl/cpu/torch_stable.html/torch-2.3.1%2Bcpu-cp311-cp311-linux_x86_64.whl
 
     Корректность работы проекта была проверена перед размещением в репозитории GitHub.
+  
