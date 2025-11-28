@@ -1,0 +1,46 @@
+name: Build and Save Docker Image
+on:
+  push:
+    branches:
+      - llm_ops
+
+jobs:
+  build-and-save-docker-image:
+    runs-on: ubuntu-latest
+    steps:
+      # Клонируем репозиторий
+      - uses: actions/checkout@v3
+
+      # Установка Docker (если он не установлен)
+      - name: Install Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io
+
+      # Устанавливаем Docker BuildX
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # Строим Docker образ
+      - name: Build the Docker image
+        id: docker_build
+        uses: docker/build-push-action@v3
+        with:
+          context: ./
+          file: ./docker/Dockerfile
+          tags: llm-ops/proj:latest
+          load: true     
+
+      # Сохраняем образ в tar-файл и сжимаем его
+      - name: Archive artifact
+        run: |
+          docker save -o docker-image.tar llm-ops/proj:latest
+          gzip docker-image.tar
+        
+      # Загружаем сохранённый образ как артефакт
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image.tar.gz
+          path: docker-image.tar.gz
+
